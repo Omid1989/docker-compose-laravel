@@ -36,8 +36,6 @@ services:
       MYSQL_ROOT_PASSWORD: secret
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
-    volumes:
-        - ./mysql:/var/lib/mysql
     networks:
       - laravel
 
@@ -96,8 +94,6 @@ services:
     container_name: redis
     image: redis:latest
     command: redis-server --appendonly yes --requirepass "redispassword"
-    volumes:
-        - ./redis:/data
     ports:
       - "6379:6379"
     networks:
