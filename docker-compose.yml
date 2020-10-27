@@ -7,6 +7,7 @@ services:
   site:
     build:
       context: .
+
       dockerfile: nginx.dockerfile
     container_name: nginx
     ports:
@@ -16,11 +17,13 @@ services:
     depends_on:
       - php
       - mysql
+      - redis
+      - phpmyadmin
     networks:
       - laravel
 
   mysql:
-    image: mysql:5.7.29
+    image: mysql:latest
     container_name: mysql
     restart: unless-stopped
     tty: true
@@ -33,6 +36,8 @@ services:
       MYSQL_ROOT_PASSWORD: secret
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
+    volumes:
+        - ./mysql:/var/lib/mysql
     networks:
       - laravel
 
@@ -64,13 +69,14 @@ services:
     entrypoint: ['composer', '--ignore-platform-reqs']
 
   npm:
-    image: node:13.7
+    image: node:latest
     container_name: npm
     volumes:
       - ./src:/var/www/html
     working_dir: /var/www/html
     entrypoint: ['npm']
-
+    networks:
+       - laravel
   artisan:
     build:
       context: .
@@ -85,3 +91,27 @@ services:
     entrypoint: ['php', '/var/www/html/artisan']
     networks:
       - laravel
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    command: redis-server --appendonly yes --requirepass "redispassword"
+    volumes:
+        - ./redis:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - laravel
+
+  phpmyadmin:
+     depends_on:
+       - mysql
+     image: phpmyadmin/phpmyadmin
+     container_name: phpmyadmin
+     restart: always
+     ports:
+       - '8081:80'
+     environment:
+        PMA_HOST: mysql
+     networks:
+       - laravel
