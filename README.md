@@ -36,3 +36,13 @@ By default, whenever you bring down the Docker network, your MySQL data will be 
 volumes:
   - ./mysql:/var/lib/mysql
 ```
+## Persistent Redis Storage
+
+1. Create a `redis` folder in the project root, alongside the `nginx` and `src` folders.
+2. Under the redis service in your `docker-compose.yml` file, add the following lines:
+
+```
+volumes:
+        - ./redis:/data
+```
+
